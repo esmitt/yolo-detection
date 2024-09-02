@@ -1,0 +1,95 @@
+# This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
+# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
+name: CMake on a single platform
+
+inputs:
+  opencv-version:
+    description: 'OpenCV version to be installed.'
+    required: true
+    default: '4.0.0'
+  opencv-extra-modules:
+    description: 'If opencv-contrib (extra modules) should be included in the instalation.'
+    required: false
+    default: true
+  install-deps:
+    description: 'If dependencies should be installed as well.'
+    required: false
+    default: true
+  CMAKE_BUILD_TYPE:
+    required: false
+    default: RELEASE
+  CMAKE_CXX_COMPILER:
+    default: g++
+    required: false
+  CMAKE_INSTALL_PREFIX:
+    default: /usr/local
+    required: false
+  WITH_TBB:
+    default: ON
+    required: false
+  WITH_IPP:
+    default: ON
+    required: false
+  BUILD_NEW_PYTHON_SUPPORT:
+    default: OFF
+    required: false
+  WITH_V4L:
+    default: OFF
+    required: false
+  ENABLE_PRECOMPILED_HEADERS:
+    default: ON
+    required: false
+  INSTALL_C_EXAMPLES:
+    default: OFF
+    required: false
+  INSTALL_PYTHON_EXAMPLES:
+    default: OFF
+    required: false
+  BUILD_EXAMPLES:
+    default: OFF
+    required: false
+  WITH_QT:
+    default: OFF
+    required: false
+  WITH_OPENGL:
+    default: OFF
+    required: false
+  GENERATE_PKGCONFIG:
+    default: OFF
+    required: false
+    
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+e
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      # Build your program with the given configuration
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      # Execute tests defined by the CMake configuration.
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ctest -C ${{env.BUILD_TYPE}}
+
