@@ -4,6 +4,8 @@
 #include "guiengine.h"
 
 namespace cvedia {
+
+// Particular implementation using the basic GUI of OpenCV
 class OpenCVGuiEngine : public GuiEngine {
 public:
 	bool init(int count, ...) override;

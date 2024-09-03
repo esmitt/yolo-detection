@@ -32,6 +32,7 @@ bool OpenCVGuiEngine::init(int count, ...) {
 
 void OpenCVGuiEngine::display(const cv::Mat& original, const cv::Mat& frame, const core::ObjectDetectionResult& result) {
 	cv::Mat combined;
+	// iterate over indexes with better confidence
 	for (size_t i = 0; i < result.indices.size(); i++) {
 		const int index = result.indices[i];
 		const cv::Rect& box = result.boundingBoxes[index];
@@ -42,7 +43,7 @@ void OpenCVGuiEngine::display(const cv::Mat& original, const cv::Mat& frame, con
 			std::cerr << "Invalid classId: " << classId << std::endl;
 			continue;
 		}
-		
+
 		// draw bounding box
 		const cv::Scalar color = m_classesColors[id];
 		cv::rectangle(frame, box, color, 2);
@@ -51,9 +52,10 @@ void OpenCVGuiEngine::display(const cv::Mat& original, const cv::Mat& frame, con
 
 		// draw the name of the class with the confidence value
 		int baseLine;
-		const cv::Size labelSize = cv::getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 2, &baseLine);
-		const int top = std::max(box.y, labelSize.height);
-		putText(frame, label, cv::Point(box.x, top), cv::FONT_HERSHEY_SIMPLEX, 0.5, color, 2);
+		// 0.5 is scale of font, and 1 is the thickness
+		const cv::Size labelSize = cv::getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
+		const int top = std::max(box.y, labelSize.height) - baseLine;
+		putText(frame, label, cv::Point(box.x, top), cv::FONT_HERSHEY_SIMPLEX, 0.5, color, 1);
 	}
 
 	cv::hconcat(original, frame, combined);
@@ -92,6 +94,7 @@ void OpenCVGuiEngine::loadColors(const std::string& filename) {
 
 		int r, g, b;
 		if (iss >> r >> g >> b) {
+			// colors are stored in BGR instead RGB
 			m_classesColors.push_back(cv::Scalar(b, g, r));
 		}
 		else {
@@ -103,4 +106,4 @@ void OpenCVGuiEngine::loadColors(const std::string& filename) {
 void OpenCVGuiEngine::release() {
 	cv::destroyAllWindows();
 }
-}
+};

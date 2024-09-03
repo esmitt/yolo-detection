@@ -2,7 +2,7 @@
 
 #include <iostream> // or any log system
 namespace cvedia {
-namespace {
+namespace { // constants values
 	constexpr double SCALE_FACTOR{ 1.0 / 255.0 };
 	const cv::Size IMAGE_INPUT_SIZE(416, 416);
 	constexpr float THRESHOLD_OBJECTNESS{ 0.5f };
@@ -43,6 +43,7 @@ core::ObjectDetectionResult OpenCVInferenceEngine::inference(const cv::Mat& fram
 	double maxClassConfidence;
 	cv::Point classIdPoint;
 
+	// check all output layers and their results to find the max confidence match to be stored
 	for (const auto& output : outputs) {
 		for (int index = 0; index < output.rows; index++) {
 			row = output.row(index);
@@ -76,6 +77,7 @@ core::ObjectDetectionResult OpenCVInferenceEngine::inference(const cv::Mat& fram
 	return detectionObjectResult;
 }
 
+// To use future in the main code, just left this unused function
 std::future<core::ObjectDetectionResult> OpenCVInferenceEngine::asyncInference(const cv::Mat& frame) {
 	return std::async(std::launch::async, &OpenCVInferenceEngine::inference, this, frame);
 }

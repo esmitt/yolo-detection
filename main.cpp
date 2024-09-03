@@ -3,8 +3,10 @@
 #include "opencvguiengine.h"
 #include "guiengine.h"
 
+#include <opencv2/opencv.hpp>
+#include <opencv2/dnn.hpp>
+
 #include <iostream>
-#include <string_view>
 #include <filesystem>
 #include <thread>
 #include <mutex>
@@ -12,8 +14,6 @@
 #include <sstream>
 #include <queue>
 #include <iostream>
-#include <opencv2/opencv.hpp>
-#include <opencv2/dnn.hpp>
 
 namespace user_input {
 	std::string program_input(int argc, char* argv[]) {
@@ -42,27 +42,24 @@ namespace reading_video {
 		while (keepRunning) {
 			cv::Mat frame;
 			{
-				std::lock_guard<std::mutex> lock(queueMutex); // Lock mutex for thread-safe access
-				if (cap.read(frame)) {                        // Read frame from video
-					frameQueue.push(frame);                   // Push frame to the queue
+				std::lock_guard<std::mutex> lock(queueMutex);
+				if (cap.read(frame)) {
+					frameQueue.push(frame);
 				}
 				else {
 					cap.set(cv::CAP_PROP_POS_FRAMES, 0);
-					//keepRunning = true;
 				}
 			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Sleep to reduce CPU usage
+			std::this_thread::sleep_for(std::chrono::milliseconds(10)); // to redice the CPU compsumtion
 		}
 	}
 }
 
 using namespace cvedia;
 
-
 int main(int argc, char* argv[]) {
 	std::string filename;
 	try {
-		//filename = "C:\\code\\cvedia\\data\\test.mp4";// { user_input::program_input(argc, argv) };
 		filename = user_input::program_input(argc, argv);
 		cv::VideoCapture cap;
 		cap.open(filename);
@@ -74,8 +71,8 @@ int main(int argc, char* argv[]) {
 
 		std::thread readerThread(reading_video::readFrames, std::ref(cap));
 		const std::vector<std::string> yoloFiles = {
-		"./model/yolov3.cfg",
-		"./model/yolov3.weights"
+		"model/yolov3.cfg",
+		"model/yolov3.weights"
 		};
 
 		for (const std::string& file : yoloFiles) {
@@ -90,11 +87,13 @@ int main(int argc, char* argv[]) {
 
 		std::unique_ptr<GuiEngine> guiEngine = std::make_unique<OpenCVGuiEngine>();
 
+		// passing the 2 parameters. The folder model/ SHOULD be at the same level of the code (e.g. folder src/ and include/)
 		if (!guiEngine->init(2, modelClasses, modelColors)) {
 			std::cerr << "Failed opening config files" << std::endl;
 			return EXIT_FAILURE;
 		}
 
+		// the model and weights
 		std::unique_ptr<InferenceEngine> inferenceEngine = std::make_unique<OpenCVInferenceEngine>();
 		inferenceEngine->loadModel(yoloFiles[0], yoloFiles[1]);
 
@@ -103,13 +102,13 @@ int main(int argc, char* argv[]) {
 			{
 				std::lock_guard<std::mutex> lock(reading_video::queueMutex);
 				if (!reading_video::frameQueue.empty()) {
-					frame = reading_video::frameQueue.front();  // Get the oldest frame in the queue
-					reading_video::frameQueue.pop();            // Remove the frame from the queue
+					frame = reading_video::frameQueue.front(); // get the oldest frame in queue
+					reading_video::frameQueue.pop(); // remove the frame
 				}
 			}
 
 			if (frame.empty()) {
-				break;
+				break; // TODO: check if this is the better approach
 			}
 			else {
 				const core::ObjectDetectionResult& detectedObjectsInfo = inferenceEngine->inference(frame);
