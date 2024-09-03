@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.8)
 
-project("Cvedia-Esmitt")
+project("Detection")
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -33,7 +33,7 @@ set(NAME_SRC
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
 # Create executable
-add_executable(Cvedia-Esmitt ${NAME_HEADER} ${NAME_SRC})
+add_executable(detection ${NAME_HEADER} ${NAME_SRC})
 
 # Link libraries
-target_link_libraries(Cvedia-Esmitt ${OpenCV_LIBS})
+target_link_libraries(detection ${OpenCV_LIBS})

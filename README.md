@@ -1,12 +1,27 @@
 # Object Detection with OpenCV DNN
 
-This project implements an object detection application using OpenCV's Deep Neural Network (DNN) module. The application reads video frames, performs object detection using a YOLO model, and displays the results in a GUI window.
+This C++ project implements an object detection application using OpenCV's Deep Neural Network (DNN) module. The application reads video frames, performs object detection using a YOLO model, and displays the results in a GUI window.
+
+This is a console-based application, using OpenCV and [OpenCV contributition](https://github.com/opencv/opencv_contrib). 
+
+![Output image of the program running](sample.png "Sample of output for a MP4 video")
 
 ## Prerequisites
 
 - **OpenCV**: Ensure OpenCV is installed with contrib modules. If `find_package(OpenCV REQUIRED)` does not locate OpenCV, specify the path in the `CMakeLists.txt` file.
 
-Ensure that the `model/` directory contains `coco_classes.txt`, `coco_colors.txt`, `yolov3.cfg`, and `yolov3.weights` at the same level as the `src/` and `include/` directories.
+- **Weights YOLO**:
+
+Ensure that the `model/` directory contains `coco_classes.txt`, `coco_colors.txt`, `yolov3.cfg`, and `yolov3.weights` at the same level as the `src/` and `include/` directories. Please, unzip the model.zip file with "extract here".
+
+For the you have to download from [https://pjreddie.com/media/files/yolov3.weights](https://pjreddie.com/media/files/yolov3.weights). Feel free to explore the YOLO [webpage](https://pjreddie.com/darknet/yolo/)
+
+## How to run?
+
+```bash
+	detection.exe <filename.mp4>
+```
+
 
 ## Inference Engine Configuration
 

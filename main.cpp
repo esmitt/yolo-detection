@@ -13,7 +13,6 @@
 #include <fstream>
 #include <sstream>
 #include <queue>
-#include <iostream>
 
 namespace user_input {
 	std::string program_input(int argc, char* argv[]) {
@@ -61,15 +60,6 @@ int main(int argc, char* argv[]) {
 	std::string filename;
 	try {
 		filename = user_input::program_input(argc, argv);
-		cv::VideoCapture cap;
-		cap.open(filename);
-		
-		if (!cap.isOpened()) {
-			std::cerr << "Error: Could not open video file " << filename << std::endl;
-			return EXIT_FAILURE;
-		}
-
-		std::thread readerThread(reading_video::readFrames, std::ref(cap));
 		const std::vector<std::string> yoloFiles = {
 		"model/yolov3.cfg",
 		"model/yolov3.weights"
@@ -81,6 +71,16 @@ int main(int argc, char* argv[]) {
 				return EXIT_FAILURE;
 			}
 		}
+
+		cv::VideoCapture cap;
+		cap.open(filename);
+		
+		if (!cap.isOpened()) {
+			std::cerr << "Error: Could not open video file " << filename << std::endl;
+			return EXIT_FAILURE;
+		}
+
+		std::thread readerThread(reading_video::readFrames, std::ref(cap));
 
 		const std::string modelClasses{ "model/coco_classes.txt" };
 		const std::string modelColors{ "model/coco_colors.txt" };
