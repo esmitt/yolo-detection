@@ -1,0 +1,36 @@
+name: Build YOLO-Detection
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Set up OpenCV
+      - name: Set up OpenCV
+        uses: makelove/OpenCV-Action@v1
+
+      # Install dependencies (if needed, e.g., for CMake or other libraries)
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake
+
+      # Build the project (assuming you're using CMake)
+      - name: Build with CMake
+        run: |
+          mkdir -p build
+          cd build
+          cmake ..
+          make
