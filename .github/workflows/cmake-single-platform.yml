@@ -19,8 +19,8 @@ jobs:
 
       # Set up OpenCV
       - name: Set up OpenCV
-        uses: makelove/OpenCV-Action@v1
-
+        uses: Dovyski/setup-opencv-action@v1.1
+            
       # Install dependencies (if needed, e.g., for CMake or other libraries)
       - name: Install dependencies
         run: |
